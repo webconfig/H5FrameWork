@@ -9,8 +9,8 @@ npm install protobufjs
 npm install
 3：生成pb
 终端下执行下面命令
-pbjs -t static-module -w commonjs -o joengProto.js joengProto.proto
-pbts -o joengProto.d.ts joengProto.js
+pbjs -t static-module -w commonjs -o pro.js proto/pro.proto
+pbts -o pro.d.ts pro.js
 第一行导出js文件，第二行把导出的js生成对应的.d.ts文件
 把ts文件拷贝到src下，吧js文件拷贝到bin目录下
 4：生成js文件
