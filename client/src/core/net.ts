@@ -1,13 +1,14 @@
-class Server extends Laya.EventDispatcher {
+class Net extends Laya.EventDispatcher {
     private _socket: Laya.Socket;
     private _protoIDs;
     private _protoBuilderUserMap;
     private _protoBuilderGameMap;
     private _connectReady: boolean = false;
     private _heartTimer: Laya.Timer;
-
-    constructor() {
+    private _url:string;
+    constructor(url:string) {
         super();
+        this._url=url;
         this._heartTimer = new Laya.Timer();
         this._socket = new Laya.Socket();
         this._socket.endian = Laya.Socket.BIG_ENDIAN;
@@ -21,28 +22,13 @@ class Server extends Laya.EventDispatcher {
         this._socket.close();
     }
 
-    public connect(uid: number, nickname: string) {
-        let addr = "ws://192.168.2.90:3746/ws";
-        this._socket.connectByUrl(addr);
+    public connect() {
+        this._socket.connectByUrl(this._url);
     }
 
     public onSocketOpen() {
-        let login = new Protocol.pkgCSJoinRoomReq();
-        login.iroomid = 1;
-        login.userId = 3;
-        var buffer = Protocol.pkgCSJoinRoomReq.encode(login).finish();
-
-        let pkg: Laya.Byte = new Laya.Byte();
-        pkg.endian = Laya.Byte.LITTLE_ENDIAN;
-        pkg.writeUint8(5);
-        pkg.writeArrayBuffer(buffer);
-
-        this._socket.send(pkg.buffer);
-        console.log("发送长度：%s", pkg.buffer.byteLength);
-
-        this._socket.flush();
         this._connectReady = true;
-
+        this.event("CONNECT_Ok");
     }
 
     public onSocketClose() {
@@ -80,6 +66,15 @@ class Server extends Laya.EventDispatcher {
         } else {
             console.log("In heartBeat, the connection id closed!")
         }
+    }
+
+    public send(cmd: number, data: Uint8Array) {
+        let pkg: Laya.Byte = new Laya.Byte();
+        pkg.endian = Laya.Byte.LITTLE_ENDIAN;
+        pkg.writeUint8(cmd);
+        pkg.writeArrayBuffer(data);
+        this._socket.send(pkg.buffer);
+        this._socket.flush();
     }
 }
 
