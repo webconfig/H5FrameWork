@@ -1,6 +1,6 @@
 import * as http from 'http';
 import * as WebSocket from 'ws';
-import { Protocol } from './pro';
+import { Protocol } from '../pro';
 import { Emitter } from './Emitter';
 export class Netserver {
     port = 3746;
@@ -22,11 +22,10 @@ export class Netserver {
         this.wss.on('connection', (ws: WebSocket) => {
 
             ws.on('message', (buffer: ArrayBuffer) => {
-                console.log("数据长度：%s", buffer.byteLength);
+                //console.log("数据长度：%s", buffer.byteLength);
                 var int8View = new Uint8Array(buffer);
                 let cmd = int8View[0];
                 int8View = int8View.slice(1);
-                /* Send the message back to the client */
                 Emitter.fire("RECV",this,ws, cmd, int8View);  
             });
         });
