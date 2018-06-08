@@ -77,5 +77,3 @@ class Net extends Laya.EventDispatcher {
         this._socket.flush();
     }
 }
-
-let server;
